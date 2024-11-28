@@ -18,14 +18,19 @@ type HeaderMenuLink = {
 
 export const menuLinks: HeaderMenuLink[] = [
   {
+    label: "PLAY",
+    href: "/",
+    icon: <MagnifyingGlassIcon className="h-4 w-4" />,
+  },
+  {
     label: "YOUR SKINS",
     href: "/skins",
     icon: <MagnifyingGlassIcon className="h-4 w-4" />,
   },
   {
-    label: "LEADERBOARD",
-    href: "/leaderboard",
-    icon: <PlusIcon className="h-4 w-4" />,
+    label: "PURCHASE EGGS",
+    href: "/eggs",
+    icon: <ChatBubbleLeftIcon className="h-4 w-4" />,
   },
   {
     label: "STATS",
@@ -33,9 +38,9 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <UserIcon className="h-4 w-4" />,
   },
   {
-    label: "PURCHASE EGGS",
-    href: "/eggs",
-    icon: <ChatBubbleLeftIcon className="h-4 w-4" />,
+    label: "LEADERBOARD",
+    href: "/leaderboard",
+    icon: <PlusIcon className="h-4 w-4" />,
   },
 ];
 
@@ -43,7 +48,9 @@ export const DesktopHeader = () => {
   const { resolvedTheme } = useTheme();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const burgerMenuRef = useRef<HTMLDivElement>(null);
-  const [logoSrc, setLogoSrc] = useState<string | undefined>(undefined);
+  const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
+
+  const logoImages = ["/img/bird-flat.png", "/img/bird-down.png", "/img/bird-up.png"];
 
   useOutsideClick(
     burgerMenuRef,
@@ -51,29 +58,36 @@ export const DesktopHeader = () => {
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLogoSrc(resolvedTheme === "dark" ? "/logo-white.svg" : "/logo-black.svg");
-    }, 10);
+    const interval = setInterval(() => {
+      setCurrentLogoIndex(prevIndex => (prevIndex + 1) % logoImages.length);
+    }, 250);
 
-    return () => clearTimeout(timer);
-  }, [resolvedTheme]);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
       <div className="sticky lg:static md:pt-6 pt-0 top-0 navbar min-h-0 flex-shrink-0 justify-around z-20 px-0 sm:px-2">
         <div>
           <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-            <div className="flex relative w-10 h-10 dark:border dark:border-white">
-              {logoSrc && <Image alt={`Crappy Birds`} className="cursor-pointer" fill src={logoSrc} />}
+            <div className="relative w-16 h-16">
+              <Image
+                alt="Crappy Birds"
+                className="cursor-pointer object-contain transition-opacity duration-300"
+                fill
+                sizes="(max-width: 48px) 50vw, 48px"
+                priority
+                src={logoImages[currentLogoIndex]}
+              />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold leading-tight code">CRAPPY BIRDS</span>
-              <span className="text-xs">THE CRAPPY FOUNDATION</span>
+              <span className="text-xl font-bold leading-tight code">CRAPPY BIRDS</span>
+              <span className="text-sm">THE CRAPPY FOUNDATION</span>
             </div>
           </Link>
         </div>
 
-        <div className="flex flex-grow justify-end sm:justify-end  items-center md:justify-end ">
+        <div className="flex flex-grow justify-end sm:justify-end items-center md:justify-end">
           <RainbowKitCustomConnectButton />
         </div>
       </div>
@@ -105,7 +119,7 @@ export const HeaderMenuLinks = ({ closeMenu }: { closeMenu?: () => void }) => {
                 isActive ? "bg-primary shadow-md" : ""
               } shadow-lg w-full lg:w-auto text-center p-3 min-w-fit border border-primary backdrop-blur-md transition hover:ease-in-out
               bg-primary/20 hover:bg-primary/30 hover:border-primary
-              dark:bg-primary/20 dark:hover:bg-primary/40 dark:border-primary dark:hover:border-primary/80 py-1.5 px-3 text-sm gap-2 flex justify-center items-center`}
+              dark:bg-primary/20 dark:hover:bg-primary/40 dark:border-white dark:hover:border-white/80 py-1.5 px-3 text-sm gap-2 flex justify-center items-center`}
               onClick={closeMenu}
             >
               {icon}
