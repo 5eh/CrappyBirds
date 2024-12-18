@@ -1,36 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const DEFAULT_SKINS = [
+const BIRDS = [
   {
     id: 1,
-    name: "Classic Bird",
-    image: "/img/bird-flat.png",
+    name: "Cowboy Bird",
+    frames: [
+      "/available-birds/cowboy-downflap.png",
+      "/available-birds/cowboy-midflap.png",
+      "/available-birds/cowboy-upflap.png",
+    ],
   },
   {
     id: 2,
-    name: "Golden Bird",
-    image: "/img/bird-up.png",
-  },
-  {
-    id: 3,
-    name: "Shadow Bird",
-    image: "/img/bird-down.png",
+    name: "Sombrero Bird",
+    frames: [
+      "/available-birds/sombrero-downflap.png",
+      "/available-birds/sombrero-midflap.png",
+      "/available-birds/sombrero-up.png",
+    ],
   },
 ];
 
 interface SkinCardProps {
   id: number;
   name: string;
-  image: string;
+  frames: string[];
   isPurchase?: boolean;
   isSelected?: boolean;
   onSelect?: (id: number) => void;
 }
 
-const SkinCard = ({ id, name, image, isPurchase = false, isSelected = false, onSelect }: SkinCardProps) => {
+const AnimatedBird = ({ frames }: { frames: string[] }) => {
+  const [currentFrame, setCurrentFrame] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentFrame(prev => (prev + 1) % frames.length);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [frames]);
+
+  return (
+    <img src={frames[currentFrame]} alt="Bird animation" className="absolute inset-0 w-full h-full object-contain" />
+  );
+};
+
+const SkinCard = ({ id, name, frames, isPurchase = false, isSelected = false, onSelect }: SkinCardProps) => {
   if (isPurchase) {
     return (
       <Link href={"/eggs"}>
@@ -54,7 +72,7 @@ const SkinCard = ({ id, name, image, isPurchase = false, isSelected = false, onS
     >
       <div className="flex-1 flex items-center justify-center">
         <div className="relative w-32 h-32">
-          <img src={image} alt={name} className="absolute inset-0 w-full h-full object-contain" />
+          <AnimatedBird frames={frames} />
         </div>
       </div>
       <div className="mt-2 text-center font-medium">{name}</div>
@@ -64,12 +82,23 @@ const SkinCard = ({ id, name, image, isPurchase = false, isSelected = false, onS
 
 export default function Home() {
   const [selectedSkinId, setSelectedSkinId] = useState<number>(1);
-  const [activeSkin, setActiveSkin] = useState(DEFAULT_SKINS[0]);
+  const [activeSkin, setActiveSkin] = useState(BIRDS[0]);
+
+  useEffect(() => {
+    const savedSkin = localStorage.getItem("selectedSkin");
+    if (savedSkin) {
+      const skin = BIRDS.find(bird => bird.id === JSON.parse(savedSkin).id);
+      if (skin) {
+        setSelectedSkinId(skin.id);
+        setActiveSkin(skin);
+      }
+    }
+  }, []);
 
   const handleSkinSelect = (id: number) => {
-    setSelectedSkinId(id);
-    const newActiveSkin = DEFAULT_SKINS.find(skin => skin.id === id);
+    const newActiveSkin = BIRDS.find(skin => skin.id === id);
     if (newActiveSkin) {
+      setSelectedSkinId(id);
       setActiveSkin(newActiveSkin);
       localStorage.setItem("selectedSkin", JSON.stringify(newActiveSkin));
     }
@@ -83,11 +112,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <div className="w-32 h-32 relative flex items-center justify-center bg-gray-700/20 rounded-lg">
               <div className="w-24 h-24 relative">
-                <img
-                  src={activeSkin.image}
-                  alt={activeSkin.name}
-                  className="absolute inset-0 w-full h-full object-contain"
-                />
+                <AnimatedBird frames={activeSkin.frames} />
               </div>
             </div>
             <div>
@@ -96,14 +121,13 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       <div className="w-full">
         <h2 className="text-2xl font-bold mb-4">Available Skins</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {DEFAULT_SKINS.map(skin => (
-            <SkinCard key={skin.id} {...skin} isSelected={selectedSkinId === skin.id} onSelect={handleSkinSelect} />
+          {BIRDS.map(bird => (
+            <SkinCard key={bird.id} {...bird} isSelected={selectedSkinId === bird.id} onSelect={handleSkinSelect} />
           ))}
-          <SkinCard id={0} name="Purchase" image="" isPurchase />
+          <SkinCard id={0} name="Purchase" frames={[]} isPurchase />
         </div>
       </div>
     </div>
