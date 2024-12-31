@@ -1,0 +1,17 @@
+{
+  "name": "Series 2 #0",
+  "description": "Crappy Birds - fly the cryptoverse of shit coins and alt coins.",
+  "image_state_1": "bafkreiepb5zxfs746xlggb37fa3x2azya43awm6n7pjpeif3qt7ke6qrge",
+  "image_state_2": "bafkreiajxaf7j5xvdnhpiioelh5wcqhlb3hbjtfxjvrxkwnvae2dktd3x4",
+  "image_state_3": "bafkreie4nephrholoukywjdefu6zak7zdc334jm4lx3lrziemzntf7xyma",
+  "imageHash": "e7f93f69d0ad0ecd371f56cac09f8a0dc470c5854b733921bbf3b9081f686902",
+  "edition": 0,
+  "date": 1733469605269,
+  "attributes": [
+    {
+      "trait_type": "layers",
+      "value": "beak"
+    }
+  ],
+  "compiler": "HashLips Art Engine - NFTChef fork"
+}
